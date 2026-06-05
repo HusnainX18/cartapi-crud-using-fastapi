@@ -1,14 +1,13 @@
+import hashlib
 from sqlalchemy.orm import Session
 from app.repositories.user_repository import UserRepository
 from app.schemas.request import CreateUserRequest, UpdateUserRequest
-from app.schemas.response import UserResponse, MessageResponse
+from app.schemas.response import MessageResponse, UserResponse
 from app.exceptions.custom_exceptions import (
     UserNotFoundException,
     EmailAlreadyExistsException,
 )
 from app.core.logger import get_logger
-
-import hashlib
 
 logger = get_logger(__name__)
 
@@ -60,4 +59,4 @@ class UserService:
             raise UserNotFoundException(user_id)
 
         self.repo.delete_user(user)
-        return MessageResponse(message=f"User id={user_id} deleted successfully")
+        return MessageResponse(msg=f"User id={user_id} deleted successfully")

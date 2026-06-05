@@ -7,10 +7,10 @@ from app.schemas.request import (
     UpdateVariantRequest,
 )
 from app.schemas.response import (
+    MessageResponse,
     ProductResponse,
     ProductWithVariantsResponse,
     VariantResponse,
-    MessageResponse,
 )
 from app.exceptions.custom_exceptions import (
     ProductNotFoundException,
@@ -49,7 +49,9 @@ class ProductService:
         products = self.repo.get_all_products()
         return [ProductWithVariantsResponse.model_validate(p) for p in products]
 
-    def update_product(self, product_id: int, payload: UpdateProductRequest) -> ProductResponse:
+    def update_product(
+        self, product_id: int, payload: UpdateProductRequest
+    ) -> ProductResponse:
         product = self.repo.get_product_by_id(product_id)
         if not product:
             raise ProductNotFoundException(product_id)
@@ -68,13 +70,15 @@ class ProductService:
             raise ProductNotFoundException(product_id)
 
         self.repo.delete_product(product)
-        return MessageResponse(message=f"Product id={product_id} deleted successfully")
+        return MessageResponse(msg=f"Product id={product_id} deleted successfully")
 
     # ------------------------------------------------------------------ #
     # VARIANT
     # ------------------------------------------------------------------ #
 
-    def create_variant(self, product_id: int, payload: CreateVariantRequest) -> VariantResponse:
+    def create_variant(
+        self, product_id: int, payload: CreateVariantRequest
+    ) -> VariantResponse:
         product = self.repo.get_product_by_id(product_id)
         if not product:
             raise ProductNotFoundException(product_id)
@@ -125,4 +129,4 @@ class ProductService:
             raise ProductVariantNotFoundException(variant_id)
 
         self.repo.delete_variant(variant)
-        return MessageResponse(message=f"Variant id={variant_id} deleted successfully")
+        return MessageResponse(msg=f"Variant id={variant_id} deleted successfully")

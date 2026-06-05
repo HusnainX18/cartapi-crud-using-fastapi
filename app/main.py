@@ -7,6 +7,7 @@ from app.exceptions.handlers import register_exception_handlers
 from app.api.v1.cart_router import router as cart_router
 from app.api.v1.user_router import router as user_router
 from app.api.v1.product_router import router as product_router
+from app.schemas.response import MessageResponse
 
 # Must import models so Base knows about them before create_all
 import app.models  # noqa: F401
@@ -38,9 +39,9 @@ def create_app() -> FastAPI:
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables verified/created")
 
-    @app.get("/", tags=["Health"])
+    @app.get("/", tags=["Health"], response_model=MessageResponse)
     def health_check():
-        return {"status": "ok", "app": settings.APP_NAME, "version": settings.APP_VERSION}
+        return MessageResponse(msg=f"{settings.APP_NAME} v{settings.APP_VERSION} is up")
 
     logger.info(f"{settings.APP_NAME} v{settings.APP_VERSION} started")
     return app

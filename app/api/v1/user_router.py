@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.request import CreateUserRequest, UpdateUserRequest
-from app.schemas.response import UserResponse, CartResponse, MessageResponse
+from app.schemas.response import MessageResponse, UserResponse, CartResponse
 from app.services.user_service import UserService
 from app.services.cart_service import CartService
 

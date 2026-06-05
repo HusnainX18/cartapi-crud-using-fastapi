@@ -3,16 +3,12 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.services.cart_service import CartService
 from app.schemas.request import CreateCartRequest, AddItemRequest, UpdateItemRequest
-from app.schemas.response import CartResponse, MessageResponse
+from app.schemas.response import MessageResponse, CartResponse
 
 router = APIRouter(prefix="/carts", tags=["Carts"])
 
 
 def get_cart_service(db: Session = Depends(get_db)) -> CartService:
-    """
-    Dependency injection factory.
-    FastAPI calls this for every request, passing a fresh DB session.
-    """
     return CartService(db)
 
 
@@ -117,7 +113,7 @@ def delete_cart(
 # ------------------------------------------------------------------ #
 @router.post(
     "/{cart_id}/checkout",
-    response_model=MessageResponse,
+    response_model=CartResponse,
     summary="Checkout cart — decrements inventory and closes cart",
 )
 def checkout(

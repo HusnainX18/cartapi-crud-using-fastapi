@@ -41,8 +41,7 @@ class CartResponse(BaseModel):
 
 
 class MessageResponse(BaseModel):
-    message: str
-    cart_id: int | None = None
+    msg: str
 
 
 # ------------------------------------------------------------------ #

@@ -9,10 +9,10 @@ from app.schemas.request import (
     UpdateVariantRequest,
 )
 from app.schemas.response import (
+    MessageResponse,
     ProductResponse,
     ProductWithVariantsResponse,
     VariantResponse,
-    MessageResponse,
 )
 
 router = APIRouter(prefix="/products", tags=["Products"])
