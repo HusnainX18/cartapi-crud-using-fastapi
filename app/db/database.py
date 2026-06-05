@@ -27,12 +27,19 @@ class Base(DeclarativeBase):
 def get_db():
     """
     Dependency Injection — FastAPI injects this into every route.
-    Ensures the session is always closed after each request.
+    Rolls back the session if any exception is raised during the request,
+    and always closes it at the end.
     """
     db = SessionLocal()
     try:
         logger.debug("DB session opened")
         yield db
+    except Exception as e:
+        db.rollback()
+        logger.warning(
+            f"DB session rolled back due to {type(e).__name__}: {e}"
+        )
+        raise
     finally:
         db.close()
         logger.debug("DB session closed")
