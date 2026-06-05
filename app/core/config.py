@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
     LOG_LEVEL: str = "INFO"
+    LOG_TO_FILE: bool = False
 
     @property
     def database_url(self) -> str:
