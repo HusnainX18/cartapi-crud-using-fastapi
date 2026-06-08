@@ -50,6 +50,7 @@ jobs:
             set -eu
             echo "==> Pulling latest code"
             cd /home/ubuntu/cartapi
+            git reset --hard
             git pull origin main
 
             echo "==> Pulling latest image"
