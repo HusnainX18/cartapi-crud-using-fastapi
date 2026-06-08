@@ -33,7 +33,7 @@ jobs:
         run: bandit -r app/ -c pyproject.toml
 
       - name: mypy — type check
-        run: mypy app/
+        run: mypy --explicit-package-bases app/
 
   ci:
     needs: lint
