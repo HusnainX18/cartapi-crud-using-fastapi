@@ -2,7 +2,7 @@
 # docker-compose.prod.yml - CartAPI production stack for EC2
 # =============================================================================
 # Standalone compose file used by the CD workflow and deploy.sh.
-# It deploys the pre-built image from DockerHub (husnainx18/cartapi)
+# It deploys the pre-built image from DockerHub (husnaib/cartapi)
 # with CloudWatch logging, resource limits, and no host-exposed MySQL.
 #
 # Usage:
