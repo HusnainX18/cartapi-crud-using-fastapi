@@ -80,7 +80,7 @@ services:
       options:
         awslogs-group: /cartapi/api
         awslogs-region: us-east-1
-        awslogs-stream-prefix: api
+        tag: "api-{{.Name}}"
     networks:
       - cartapi-net
     deploy:
