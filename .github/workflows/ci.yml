@@ -22,7 +22,7 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -uroot -ptestpw"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
@@ -61,7 +61,7 @@ jobs:
       - name: Install Newman
         run: npm install -g newman
 
-      - name: Start uvicorn for Newman tests
+      - name: Start API and Run Newman tests
         run: |
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           for i in $(seq 1 15); do
@@ -69,9 +69,6 @@ jobs:
             echo "waiting for uvicorn..."
             sleep 2
           done
-
-      - name: Run Newman
-        run: |
           newman run postman/CartAPI.postman_collection.json \
             -e postman/CartAPI.postman_environment.json \
             --reporters cli
