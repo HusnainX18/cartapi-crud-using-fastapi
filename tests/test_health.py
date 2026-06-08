@@ -4,6 +4,7 @@ Liveness check. The app's heartbeat endpoint.
 """
 
 from fastapi.testclient import TestClient
+from app.core.config import settings
 
 
 def test_health_check_returns_200_and_msg(client: TestClient):
@@ -12,5 +13,5 @@ def test_health_check_returns_200_and_msg(client: TestClient):
     assert r.status_code == 200
     body = r.json()
     assert "msg" in body
-    assert "CartAPI" in body["msg"]
-    assert "1.0.0" in body["msg"]
+    assert settings.APP_NAME in body["msg"]
+    assert settings.APP_VERSION in body["msg"]
