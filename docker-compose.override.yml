@@ -1,0 +1,39 @@
+# =============================================================================
+# docker-compose.override.yml - dev-only overrides
+# =============================================================================
+# Compose automatically merges this with docker-compose.yml when you run
+# `docker compose up` from the project root. Use it for local development:
+#
+#   - Bind-mount ./app so code edits are live (no rebuild needed)
+#   - Override the command to uvicorn --reload (auto-restart on file change)
+#   - Pass the host .env (so DEBUG, LOG_LEVEL, etc. are honoured)
+#
+# In CI / production, this file is NOT loaded (use docker-compose.prod.yml
+# or call `docker compose -f docker-compose.yml up` explicitly).
+# =============================================================================
+
+services:
+  api:
+    # Bind-mount the app source so edits are reflected instantly.
+    # Migrations / alembic.ini / docker/ are still baked into the image.
+    volumes:
+      - ./app:/app/app
+    # Run the entrypoint so it still waits for MySQL and applies migrations
+    # on every container start, then hand off to uvicorn with --reload.
+    # The entrypoint is a pass-through: it execs whatever args we pass here.
+    command:
+      - ./docker/entrypoint.sh
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+    environment:
+      # In dev, the .env on the host is the source of truth.
+      # We override DATABASE_URL last so it still points at the `db` service.
+      DATABASE_URL: mysql+pymysql://root:${MYSQL_ROOT_PASSWORD:-rootpw}@db:3306/${MYSQL_DATABASE:-shopping_cart_db}
+      DEBUG: "True"
+      LOG_LEVEL: DEBUG
+      LOG_TO_FILE: "True"

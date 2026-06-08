@@ -62,3 +62,9 @@ class SkuAlreadyExistsException(Exception):
     def __init__(self, sku: str):
         self.message = f"Variant with SKU={sku} already exists"
         super().__init__(self.message)
+
+
+class EmptyCartException(Exception):
+    def __init__(self, cart_id: int):
+        self.message = f"Cart id={cart_id} is empty. Add items before checkout."
+        super().__init__(self.message)

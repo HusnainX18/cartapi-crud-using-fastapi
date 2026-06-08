@@ -13,6 +13,7 @@ from app.exceptions.custom_exceptions import (
     EmailAlreadyExistsException,
     ProductNotFoundException,
     SkuAlreadyExistsException,
+    EmptyCartException,
 )
 from app.core.logger import get_logger
 
@@ -80,6 +81,11 @@ def register_exception_handlers(app):
     async def sku_already_exists_handler(request: Request, exc: SkuAlreadyExistsException):
         logger.warning(exc.message)
         return JSONResponse(status_code=409, content={"msg": exc.message})
+
+    @app.exception_handler(EmptyCartException)
+    async def empty_cart_handler(request: Request, exc: EmptyCartException):
+        logger.warning(exc.message)
+        return JSONResponse(status_code=400, content={"msg": exc.message})
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):

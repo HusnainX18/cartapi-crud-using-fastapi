@@ -1,0 +1,103 @@
+# =============================================================================
+# docker-compose.prod.yml - CartAPI production stack for EC2
+# =============================================================================
+# Standalone compose file used by the CD workflow and deploy.sh.
+# It deploys the pre-built image from DockerHub (husnainx18/cartapi)
+# with CloudWatch logging, resource limits, and no host-exposed MySQL.
+#
+# Usage:
+#   docker compose -f docker-compose.prod.yml up -d
+#   docker compose -f docker-compose.prod.yml down
+#
+# Environment variables (set in .env or passed via SSH):
+#   MYSQL_ROOT_PASSWORD  (required) - root password for MySQL
+#   MYSQL_DATABASE       (default: shopping_cart_db)
+#   CARTAPI_TAG          (default: latest)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # MySQL 8.0
+  # ---------------------------------------------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: cartapi-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-shopping_cart_db}
+    command:
+      - --innodb-buffer-pool-size=256M
+      - --max-connections=100
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # MySQL is NOT exposed to the host in production — only the api
+    # service can reach it via the internal docker network (db:3306).
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cartapi-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # CartAPI (FastAPI + Alembic + uvicorn)
+  # ---------------------------------------------------------------------------
+  api:
+    image: husnainx18/cartapi:${CARTAPI_TAG:-latest}
+    container_name: cartapi-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE:-shopping_cart_db}
+      APP_NAME: CartAPI
+      APP_VERSION: 1.0.0
+      DEBUG: "False"
+      LOG_LEVEL: INFO
+      LOG_TO_FILE: "False"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: /cartapi/api
+        awslogs-region: us-east-1
+        awslogs-stream-prefix: api
+    networks:
+      - cartapi-net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+# -----------------------------------------------------------------------------
+# Named volumes + networks
+# -----------------------------------------------------------------------------
+volumes:
+  mysql_data:
+    name: cartapi_mysql_data
+
+networks:
+  cartapi-net:
+    name: cartapi-net
+    driver: bridge

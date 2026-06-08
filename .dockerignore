@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Local config and secrets (NEVER bake into the image)
+.env
+.env.*
+!.env.example
+
+# Application runtime artifacts
+logs/
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Tests + Postman + IDE + OS (we don't ship these in the image;
+# pytest + newman are part of CI's separate run, not the production image)
+tests/
+postman/
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Docker internals (avoid infinite recursion if Docker ever runs in Docker)
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.prod.yml
+.docker/

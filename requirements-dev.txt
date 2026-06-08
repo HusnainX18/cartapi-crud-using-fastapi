@@ -1,0 +1,10 @@
+# ---------------------------------------------------------------- #
+# CartAPI - development / test dependencies
+# Install with:  pip install -r requirements-dev.txt
+# Combines runtime + dev (so CI can use a single install line).
+# ---------------------------------------------------------------- #
+
+-r requirements.txt
+
+pytest==8.3.3
+pytest-cov==5.0.0

@@ -78,3 +78,16 @@ desktop.ini
 # Docker
 # ---------------------------------------------------------------- #
 *.pid
+
+# ---------------------------------------------------------------- #
+# Postman (desktop app auto-state — per-machine, not portable)
+# ---------------------------------------------------------------- #
+.postman/
+# Auto-created subdirs by the Postman desktop app (ignore, but keep
+# the two hand-written JSON files we ship with the repo)
+postman/collections/
+postman/environments/
+postman/flows/
+postman/globals/
+postman/mocks/
+postman/specs/

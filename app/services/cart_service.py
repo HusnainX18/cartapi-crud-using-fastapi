@@ -9,6 +9,7 @@ from app.exceptions.custom_exceptions import (
     InsufficientInventoryException,
     ItemAlreadyInCartException,
     CartNotActiveException,
+    EmptyCartException,
 )
 from app.constants.status import CartStatus
 from app.core.logger import get_logger
@@ -178,7 +179,7 @@ class CartService:
             raise CartNotActiveException(cart_id, cart.status)
 
         if not cart.items:
-            raise ValueError("Cannot checkout an empty cart")
+            raise EmptyCartException(cart_id)
 
         for item in cart.items:
             variant = self.repo.get_variant_by_id(item.product_variant_id)

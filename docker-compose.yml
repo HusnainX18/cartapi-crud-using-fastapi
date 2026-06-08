@@ -1,0 +1,87 @@
+# =============================================================================
+# docker-compose.yml - CartAPI production-like stack
+# =============================================================================
+# This is the BASE compose file. It runs the full app: MySQL + FastAPI.
+# For local dev with hot-reload, also bring up `docker-compose.override.yml`
+# (compose auto-merges it when present).
+#
+# Usage:
+#   docker compose up --build         # build images + start services
+#   docker compose down               # stop and remove containers
+#   docker compose down -v            # also wipe the mysql_data volume
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # MySQL 8.0
+  # ---------------------------------------------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: cartapi-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpw}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-shopping_cart_db}
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --max-connections=50
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # Expose 3306 to the host ONLY for debugging. Comment out for tighter security.
+    # In production we never publish the DB port; the api talks to it over the
+    # internal compose network (`db:3306`).
+    # DB_HOST_PORT is configurable so you can run this on a non-conflicting
+    # port if XAMPP / another MySQL is already on 3306 locally.
+    ports:
+      - "${DB_HOST_PORT:-3306}:3306"
+    healthcheck:
+      # mysqladmin ping returns 0 if the server is alive
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-rootpw}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - cartapi-net
+
+  # ---------------------------------------------------------------------------
+  # CartAPI (FastAPI + Alembic + uvicorn)
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cartapi-api
+    restart: unless-stopped
+    # The api service does NOT load .env from the host (the host .env points
+    # at localhost:3306 which would be the wrong host inside the container).
+    # Instead, we pass the container-internal DATABASE_URL explicitly.
+    environment:
+      DATABASE_URL: mysql+pymysql://root:${MYSQL_ROOT_PASSWORD:-rootpw}@db:3306/${MYSQL_DATABASE:-shopping_cart_db}
+      APP_NAME: CartAPI
+      APP_VERSION: 1.0.0
+      DEBUG: "False"
+      LOG_LEVEL: INFO
+      # LOG_TO_FILE=False inside containers - stdout is shipped to CloudWatch
+      LOG_TO_FILE: "False"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - cartapi-net
+
+# -----------------------------------------------------------------------------
+# Named volumes + networks
+# -----------------------------------------------------------------------------
+volumes:
+  mysql_data:
+    name: cartapi_mysql_data
+
+networks:
+  cartapi-net:
+    name: cartapi-net
+    driver: bridge
