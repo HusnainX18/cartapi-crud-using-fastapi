@@ -75,14 +75,13 @@ services:
       timeout: 5s
       start_period: 20s
       retries: 3
-    # Logging configuration for CloudWatch. Commented out because the EC2 instance
-    # lacks an IAM Instance Profile (role) with CloudWatch write permissions.
-    # logging:
-    #   driver: awslogs
-    #   options:
-    #     awslogs-group: /cartapi/api
-    #     awslogs-region: us-east-1
-    #     tag: "api-{{.Name}}"
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: /cartapi/api
+        awslogs-region: us-east-1
+        awslogs-create-group: "true"
+        tag: "api-{{.Name}}"
     networks:
       - cartapi-net
     deploy:

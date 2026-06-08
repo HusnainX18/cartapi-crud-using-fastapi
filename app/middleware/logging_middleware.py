@@ -63,7 +63,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         log_fn(
             f"RESPONSE {tag} {method} {path} "
-            f"status={status_code} duration={duration_ms}ms msg={msg}"
+            f"status={status_code} duration={duration_ms}ms msg={msg}",
+            extra={"path": path, "duration_ms": duration_ms},
         )
 
         excluded_headers = {"content-length", "content-encoding"}

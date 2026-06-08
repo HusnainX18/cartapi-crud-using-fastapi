@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 from pathlib import Path
@@ -11,6 +12,19 @@ FILE_LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
+class JsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        log_data = {
+            "time": self.formatTime(record),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+            "path": getattr(record, "path", None),
+            "duration_ms": getattr(record, "duration_ms", None),
+        }
+        return json.dumps(log_data)
+
+
 def get_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
 
@@ -21,7 +35,10 @@ def get_logger(name: str) -> logging.Logger:
 
     # Console handler (always on — captured by Docker/CloudWatch in production)
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT))
+    if settings.DEBUG:
+        console_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT))
+    else:
+        console_handler.setFormatter(JsonFormatter())
     logger.addHandler(console_handler)
 
     # File handler (opt-in via LOG_TO_FILE=True) — disabled in containers by default
