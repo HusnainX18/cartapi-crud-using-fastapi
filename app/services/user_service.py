@@ -1,13 +1,15 @@
 import hashlib
+
 from sqlalchemy.orm import Session
+
+from app.core.logger import get_logger
+from app.exceptions.custom_exceptions import (
+    EmailAlreadyExistsException,
+    UserNotFoundException,
+)
 from app.repositories.user_repository import UserRepository
 from app.schemas.request import CreateUserRequest, UpdateUserRequest
 from app.schemas.response import MessageResponse, UserResponse
-from app.exceptions.custom_exceptions import (
-    UserNotFoundException,
-    EmailAlreadyExistsException,
-)
-from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -17,7 +19,6 @@ def _hash_password(password: str) -> str:
 
 
 class UserService:
-
     def __init__(self, db: Session):
         self.repo = UserRepository(db)
 

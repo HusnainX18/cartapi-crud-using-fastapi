@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
-from app.models.user import User
+
 from app.core.logger import get_logger
+from app.models.user import User
 
 logger = get_logger(__name__)
 
 
 class UserRepository:
-
     def __init__(self, db: Session):
         self.db = db
 

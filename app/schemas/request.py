@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 
 
 class CreateCartRequest(BaseModel):
@@ -19,6 +19,7 @@ class UpdateItemRequest(BaseModel):
 # USER
 # ------------------------------------------------------------------ #
 
+
 class CreateUserRequest(BaseModel):
     email: str = Field(..., max_length=255, description="User email address")
     password: str = Field(..., min_length=6, max_length=255, description="Plain-text password")
@@ -33,6 +34,7 @@ class UpdateUserRequest(BaseModel):
 # ------------------------------------------------------------------ #
 # PRODUCT
 # ------------------------------------------------------------------ #
+
 
 class CreateProductRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)

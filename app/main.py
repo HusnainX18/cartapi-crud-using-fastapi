@@ -1,11 +1,12 @@
 from fastapi import FastAPI
+
+from app.api.v1.cart_router import router as cart_router
+from app.api.v1.product_router import router as product_router
+from app.api.v1.user_router import router as user_router
 from app.core.config import settings
 from app.core.logger import get_logger
-from app.middleware.logging_middleware import LoggingMiddleware
 from app.exceptions.handlers import register_exception_handlers
-from app.api.v1.cart_router import router as cart_router
-from app.api.v1.user_router import router as user_router
-from app.api.v1.product_router import router as product_router
+from app.middleware.logging_middleware import LoggingMiddleware
 from app.schemas.response import MessageResponse
 
 logger = get_logger(__name__)

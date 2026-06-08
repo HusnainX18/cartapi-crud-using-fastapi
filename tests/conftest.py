@@ -13,6 +13,7 @@ Why per-test drop_all + create_all?
 Each test gets a known-empty database. No state leaks between tests.
 Cost: ~50ms per test. With ~66 tests that's ~3.3s total. Worth the reliability.
 """
+
 from __future__ import annotations
 
 import os
@@ -135,15 +136,13 @@ def client(db, SessionLocalTest):
 
 
 def _create_user(client, email="alice@example.com", password="secret123", name="Alice"):
-    return client.post("/api/v1/users/", json={
-        "email": email, "password": password, "name": name
-    })
+    return client.post("/api/v1/users/", json={"email": email, "password": password, "name": name})
 
 
 def _create_product(client, name="Widget", description="A widget", brand="Acme"):
-    return client.post("/api/v1/products/", json={
-        "name": name, "description": description, "brand": brand
-    })
+    return client.post(
+        "/api/v1/products/", json={"name": name, "description": description, "brand": brand}
+    )
 
 
 def _create_variant(

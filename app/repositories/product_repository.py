@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session, joinedload
+
+from app.core.logger import get_logger
 from app.models.product import Product
 from app.models.product_variant import ProductVariant
-from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
 
 class ProductRepository:
-
     def __init__(self, db: Session):
         self.db = db
 
@@ -32,11 +32,7 @@ class ProductRepository:
         )
 
     def get_all_products(self) -> list[Product]:
-        return (
-            self.db.query(Product)
-            .options(joinedload(Product.variants))
-            .all()
-        )
+        return self.db.query(Product).options(joinedload(Product.variants)).all()
 
     def update_product(
         self, product: Product, name: str | None, description: str | None, brand: str | None
@@ -94,11 +90,7 @@ class ProductRepository:
         return self.db.query(ProductVariant).filter(ProductVariant.sku == sku).first()
 
     def get_variants_by_product(self, product_id: int) -> list[ProductVariant]:
-        return (
-            self.db.query(ProductVariant)
-            .filter(ProductVariant.product_id == product_id)
-            .all()
-        )
+        return self.db.query(ProductVariant).filter(ProductVariant.product_id == product_id).all()
 
     def update_variant(
         self,

@@ -1,9 +1,16 @@
 from sqlalchemy.orm import Session
+
+from app.core.logger import get_logger
+from app.exceptions.custom_exceptions import (
+    ProductNotFoundException,
+    ProductVariantNotFoundException,
+    SkuAlreadyExistsException,
+)
 from app.repositories.product_repository import ProductRepository
 from app.schemas.request import (
     CreateProductRequest,
-    UpdateProductRequest,
     CreateVariantRequest,
+    UpdateProductRequest,
     UpdateVariantRequest,
 )
 from app.schemas.response import (
@@ -12,18 +19,11 @@ from app.schemas.response import (
     ProductWithVariantsResponse,
     VariantResponse,
 )
-from app.exceptions.custom_exceptions import (
-    ProductNotFoundException,
-    ProductVariantNotFoundException,
-    SkuAlreadyExistsException,
-)
-from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
 
 class ProductService:
-
     def __init__(self, db: Session):
         self.repo = ProductRepository(db)
 
@@ -49,9 +49,7 @@ class ProductService:
         products = self.repo.get_all_products()
         return [ProductWithVariantsResponse.model_validate(p) for p in products]
 
-    def update_product(
-        self, product_id: int, payload: UpdateProductRequest
-    ) -> ProductResponse:
+    def update_product(self, product_id: int, payload: UpdateProductRequest) -> ProductResponse:
         product = self.repo.get_product_by_id(product_id)
         if not product:
             raise ProductNotFoundException(product_id)
@@ -76,9 +74,7 @@ class ProductService:
     # VARIANT
     # ------------------------------------------------------------------ #
 
-    def create_variant(
-        self, product_id: int, payload: CreateVariantRequest
-    ) -> VariantResponse:
+    def create_variant(self, product_id: int, payload: CreateVariantRequest) -> VariantResponse:
         product = self.repo.get_product_by_id(product_id)
         if not product:
             raise ProductNotFoundException(product_id)
@@ -102,9 +98,7 @@ class ProductService:
             raise ProductVariantNotFoundException(variant_id)
         return VariantResponse.model_validate(variant)
 
-    def update_variant(
-        self, variant_id: int, payload: UpdateVariantRequest
-    ) -> VariantResponse:
+    def update_variant(self, variant_id: int, payload: UpdateVariantRequest) -> VariantResponse:
         variant = self.repo.get_variant_by_id(variant_id)
         if not variant:
             raise ProductVariantNotFoundException(variant_id)

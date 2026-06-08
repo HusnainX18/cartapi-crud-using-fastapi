@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session, joinedload
+
+from app.constants.status import CartStatus
+from app.core.logger import get_logger
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product_variant import ProductVariant
-from app.constants.status import CartStatus
-from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -34,9 +35,9 @@ class CartRepository:
         return (
             self.db.query(Cart)
             .options(
-                joinedload(Cart.items).joinedload(CartItem.variant).joinedload(
-                    ProductVariant.product
-                ),
+                joinedload(Cart.items)
+                .joinedload(CartItem.variant)
+                .joinedload(ProductVariant.product),
                 joinedload(Cart.user),
             )
             .filter(Cart.id == cart_id)
@@ -47,9 +48,9 @@ class CartRepository:
         return (
             self.db.query(Cart)
             .options(
-                joinedload(Cart.items).joinedload(CartItem.variant).joinedload(
-                    ProductVariant.product
-                ),
+                joinedload(Cart.items)
+                .joinedload(CartItem.variant)
+                .joinedload(ProductVariant.product),
                 joinedload(Cart.user),
             )
             .filter(Cart.user_id == user_id, Cart.status == CartStatus.ACTIVE)

@@ -2,6 +2,7 @@
 test_health.py - 1 test
 Liveness check. The app's heartbeat endpoint.
 """
+
 from fastapi.testclient import TestClient
 
 

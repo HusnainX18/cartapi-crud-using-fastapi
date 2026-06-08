@@ -19,8 +19,7 @@ class ProductVariantNotFoundException(Exception):
 class InsufficientInventoryException(Exception):
     def __init__(self, sku: str, available: int, requested: int):
         self.message = (
-            f"Insufficient inventory for SKU={sku}. "
-            f"Available={available}, Requested={requested}"
+            f"Insufficient inventory for SKU={sku}. Available={available}, Requested={requested}"
         )
         super().__init__(self.message)
 
@@ -28,8 +27,7 @@ class InsufficientInventoryException(Exception):
 class ItemAlreadyInCartException(Exception):
     def __init__(self, variant_id: int):
         self.message = (
-            f"Variant id={variant_id} is already in the cart. "
-            f"Use PATCH to update quantity."
+            f"Variant id={variant_id} is already in the cart. Use PATCH to update quantity."
         )
         super().__init__(self.message)
 

@@ -1,21 +1,22 @@
-from fastapi import Request, HTTPException
+from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError
+from sqlalchemy.exc import IntegrityError, OperationalError, SQLAlchemyError
+
+from app.core.logger import get_logger
 from app.exceptions.custom_exceptions import (
-    CartNotFoundException,
     CartItemNotFoundException,
-    ProductVariantNotFoundException,
+    CartNotActiveException,
+    CartNotFoundException,
+    EmailAlreadyExistsException,
+    EmptyCartException,
     InsufficientInventoryException,
     ItemAlreadyInCartException,
-    CartNotActiveException,
-    UserNotFoundException,
-    EmailAlreadyExistsException,
     ProductNotFoundException,
+    ProductVariantNotFoundException,
     SkuAlreadyExistsException,
-    EmptyCartException,
+    UserNotFoundException,
 )
-from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -37,23 +38,17 @@ def register_exception_handlers(app):
         return JSONResponse(status_code=404, content={"msg": exc.message})
 
     @app.exception_handler(ProductVariantNotFoundException)
-    async def variant_not_found_handler(
-        request: Request, exc: ProductVariantNotFoundException
-    ):
+    async def variant_not_found_handler(request: Request, exc: ProductVariantNotFoundException):
         logger.warning(exc.message)
         return JSONResponse(status_code=404, content={"msg": exc.message})
 
     @app.exception_handler(InsufficientInventoryException)
-    async def insufficient_inventory_handler(
-        request: Request, exc: InsufficientInventoryException
-    ):
+    async def insufficient_inventory_handler(request: Request, exc: InsufficientInventoryException):
         logger.warning(exc.message)
         return JSONResponse(status_code=422, content={"msg": exc.message})
 
     @app.exception_handler(ItemAlreadyInCartException)
-    async def item_already_in_cart_handler(
-        request: Request, exc: ItemAlreadyInCartException
-    ):
+    async def item_already_in_cart_handler(request: Request, exc: ItemAlreadyInCartException):
         logger.warning(exc.message)
         return JSONResponse(status_code=409, content={"msg": exc.message})
 
@@ -121,7 +116,7 @@ def register_exception_handlers(app):
             status_code=409,
             content={
                 "msg": "Database constraint failed. "
-                       "The request conflicts with existing data or violates a relationship."
+                "The request conflicts with existing data or violates a relationship."
             },
         )
 

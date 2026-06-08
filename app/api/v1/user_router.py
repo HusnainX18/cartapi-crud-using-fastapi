@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.request import CreateUserRequest, UpdateUserRequest
-from app.schemas.response import MessageResponse, UserResponse, CartResponse
-from app.services.user_service import UserService
+from app.schemas.response import CartResponse, MessageResponse, UserResponse
 from app.services.cart_service import CartService
+from app.services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

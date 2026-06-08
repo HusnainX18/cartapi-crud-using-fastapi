@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
 from app.core.config import settings
 from app.core.logger import get_logger
 
@@ -7,10 +8,10 @@ logger = get_logger(__name__)
 
 engine = create_engine(
     settings.database_url,
-    pool_pre_ping=True,       # Checks connection health before use
-    pool_size=10,             # Max connections in pool
-    max_overflow=20,          # Extra connections beyond pool_size
-    echo=settings.DEBUG,      # Logs all SQL when DEBUG=True
+    pool_pre_ping=True,  # Checks connection health before use
+    pool_size=10,  # Max connections in pool
+    max_overflow=20,  # Extra connections beyond pool_size
+    echo=settings.DEBUG,  # Logs all SQL when DEBUG=True
 )
 
 SessionLocal = sessionmaker(
@@ -36,9 +37,7 @@ def get_db():
         yield db
     except Exception as e:
         db.rollback()
-        logger.warning(
-            f"DB session rolled back due to {type(e).__name__}: {e}"
-        )
+        logger.warning(f"DB session rolled back due to {type(e).__name__}: {e}")
         raise
     finally:
         db.close()

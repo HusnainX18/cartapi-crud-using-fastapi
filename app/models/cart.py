@@ -1,7 +1,8 @@
-from sqlalchemy import Integer, Numeric, ForeignKey, String
+from sqlalchemy import ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.db.database import Base
+
 from app.constants.status import CartStatus
+from app.db.database import Base
 
 
 class Cart(Base):
@@ -14,9 +15,7 @@ class Cart(Base):
     discount: Mapped[float | None] = mapped_column(Numeric(10, 2), nullable=True, default=0)
 
     # Mentor requirement: track cart lifecycle
-    status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default=CartStatus.ACTIVE
-    )
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default=CartStatus.ACTIVE)
 
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="carts")

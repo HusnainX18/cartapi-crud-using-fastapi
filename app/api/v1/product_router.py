@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
+
 from app.db.database import get_db
-from app.services.product_service import ProductService
 from app.schemas.request import (
     CreateProductRequest,
-    UpdateProductRequest,
     CreateVariantRequest,
+    UpdateProductRequest,
     UpdateVariantRequest,
 )
 from app.schemas.response import (
@@ -14,6 +14,7 @@ from app.schemas.response import (
     ProductWithVariantsResponse,
     VariantResponse,
 )
+from app.services.product_service import ProductService
 
 router = APIRouter(prefix="/products", tags=["Products"])
 

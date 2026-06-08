@@ -1,5 +1,6 @@
-from sqlalchemy import Integer, Numeric, ForeignKey, String, CheckConstraint, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, Integer, Numeric, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.db.database import Base
 
 
@@ -24,6 +25,4 @@ class CartItem(Base):
 
     # Relationships
     cart: Mapped["Cart"] = relationship("Cart", back_populates="items")
-    variant: Mapped["ProductVariant"] = relationship(
-        "ProductVariant", back_populates="cart_items"
-    )
+    variant: Mapped["ProductVariant"] = relationship("ProductVariant", back_populates="cart_items")

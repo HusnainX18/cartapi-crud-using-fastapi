@@ -1,4 +1,5 @@
 from pydantic import BaseModel, computed_field
+
 from app.constants.status import CartStatus
 
 
@@ -48,6 +49,7 @@ class MessageResponse(BaseModel):
 # USER
 # ------------------------------------------------------------------ #
 
+
 class UserResponse(BaseModel):
     id: int
     email: str
@@ -59,6 +61,7 @@ class UserResponse(BaseModel):
 # ------------------------------------------------------------------ #
 # PRODUCT
 # ------------------------------------------------------------------ #
+
 
 class VariantResponse(BaseModel):
     id: int

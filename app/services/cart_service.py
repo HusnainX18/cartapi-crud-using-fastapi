@@ -1,19 +1,20 @@
 from sqlalchemy.orm import Session
-from app.repositories.cart_repository import CartRepository
-from app.schemas.request import CreateCartRequest, AddItemRequest, UpdateItemRequest
-from app.schemas.response import MessageResponse, CartResponse, CartItemResponse
-from app.exceptions.custom_exceptions import (
-    CartNotFoundException,
-    CartItemNotFoundException,
-    ProductVariantNotFoundException,
-    InsufficientInventoryException,
-    ItemAlreadyInCartException,
-    CartNotActiveException,
-    EmptyCartException,
-)
+
 from app.constants.status import CartStatus
 from app.core.logger import get_logger
+from app.exceptions.custom_exceptions import (
+    CartItemNotFoundException,
+    CartNotActiveException,
+    CartNotFoundException,
+    EmptyCartException,
+    InsufficientInventoryException,
+    ItemAlreadyInCartException,
+    ProductVariantNotFoundException,
+)
 from app.models.cart import Cart
+from app.repositories.cart_repository import CartRepository
+from app.schemas.request import AddItemRequest, CreateCartRequest, UpdateItemRequest
+from app.schemas.response import CartItemResponse, CartResponse, MessageResponse
 
 logger = get_logger(__name__)
 
@@ -42,7 +43,6 @@ def _to_cart_response(cart: Cart) -> CartResponse:
 
 
 class CartService:
-
     def __init__(self, db: Session):
         self.repo = CartRepository(db)
 
@@ -52,9 +52,7 @@ class CartService:
 
     def create_cart(self, payload: CreateCartRequest) -> CartResponse:
         logger.info(f"Creating cart for user_id={payload.user_id}")
-        cart = self.repo.create_cart(
-            user_id=payload.user_id, discount=payload.discount
-        )
+        cart = self.repo.create_cart(user_id=payload.user_id, discount=payload.discount)
         cart = self.repo.get_cart_by_id(cart.id)
         return _to_cart_response(cart)
 
@@ -114,9 +112,7 @@ class CartService:
     # UPDATE ITEM QUANTITY
     # ------------------------------------------------------------------ #
 
-    def update_item(
-        self, cart_id: int, item_id: int, payload: UpdateItemRequest
-    ) -> CartResponse:
+    def update_item(self, cart_id: int, item_id: int, payload: UpdateItemRequest) -> CartResponse:
         cart = self.repo.get_cart_by_id(cart_id)
         if not cart:
             raise CartNotFoundException(cart_id)

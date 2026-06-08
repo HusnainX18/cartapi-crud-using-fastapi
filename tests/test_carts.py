@@ -2,18 +2,20 @@
 test_carts.py - 12 tests
 Cart CRUD. 6 positive, 6 negative.
 """
+
 from fastapi.testclient import TestClient
 
 
 def _make_user(client, email="cartuser@example.com") -> int:
-    return client.post("/api/v1/users/", json={
-        "email": email, "password": "secret", "name": "Cart User"
-    }).json()["id"]
+    return client.post(
+        "/api/v1/users/", json={"email": email, "password": "secret", "name": "Cart User"}
+    ).json()["id"]
 
 
 # ------------------------------------------------------------------ #
 # Positive
 # ------------------------------------------------------------------ #
+
 
 def test_create_cart_for_user_returns_active_cart(client: TestClient):
     uid = _make_user(client)
@@ -73,6 +75,7 @@ def test_delete_cart_returns_msg(client: TestClient):
 # Negative
 # ------------------------------------------------------------------ #
 
+
 def test_get_nonexistent_cart_returns_404(client: TestClient):
     r = client.get("/api/v1/carts/99999")
     assert r.status_code == 404
@@ -96,9 +99,7 @@ def test_create_cart_with_negative_discount_returns_422(client: TestClient):
 
 
 def test_add_item_to_nonexistent_cart_returns_404(client: TestClient):
-    r = client.post("/api/v1/carts/99999/items", json={
-        "product_variant_id": 1, "quantity": 1
-    })
+    r = client.post("/api/v1/carts/99999/items", json={"product_variant_id": 1, "quantity": 1})
     assert r.status_code == 404
 
 
