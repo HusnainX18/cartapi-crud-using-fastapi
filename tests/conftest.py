@@ -16,10 +16,11 @@ Cost: ~50ms per test. With ~66 tests that's ~3.3s total. Worth the reliability.
 from __future__ import annotations
 
 import os
-import pytest
+
 import pymysql
+import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import sessionmaker
 
@@ -28,10 +29,10 @@ from sqlalchemy.orm import sessionmaker
 TEST_DB_NAME = "shopping_cart_test_db"
 os.environ.setdefault("DATABASE_URL", f"mysql+pymysql://root:@localhost:3306/{TEST_DB_NAME}")
 
+import app.models  # noqa: E402, F401  (registers all models on Base.metadata)
 from app.core.config import settings  # noqa: E402  (env var above must be set first)
 from app.db.database import Base, get_db  # noqa: E402
 from app.main import app as fastapi_app  # noqa: E402  (rename to avoid shadowing the `app` package)
-import app.models  # noqa: E402, F401  (registers all models on Base.metadata)
 
 
 def _ensure_test_database_exists() -> None:
@@ -40,14 +41,8 @@ def _ensure_test_database_exists() -> None:
     Connects without selecting a database, runs CREATE DATABASE IF NOT EXISTS,
     then closes. Idempotent — safe to call on every test run.
     """
-    base_url = settings.database_url
-    # Strip the database name to get a server-only URL
-    # Format: mysql+pymysql://user:pass@host:port/dbname
-    scheme_userpass, rest = base_url.split("://", 1)
-    userpass_host, dbname = rest.rsplit("/", 1)
-    server_url = f"{scheme_userpass}://{userpass_host}/"
-
     url = make_url(settings.database_url)
+    dbname = url.database
     conn = pymysql.connect(
         host=url.host or "localhost",
         port=url.port or 3306,

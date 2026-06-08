@@ -1,0 +1,21 @@
+line-length = 100
+target-version = "py312"
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes (unused imports, undefined names)
+    "I",   # isort (import ordering)
+    "B",   # flake8-bugbear (likely bugs)
+    "S",   # bandit security rules
+    "UP",  # pyupgrade (modernise syntax)
+]
+ignore = [
+    "S101", # allow assert in tests
+    "B008", # allow Depends in argument defaults for FastAPI
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["S", "B"]   # relax security rules in test files
+"app/models/*" = ["F821"] # allow forward references in type annotations

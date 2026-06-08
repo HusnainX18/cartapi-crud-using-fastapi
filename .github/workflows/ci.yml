@@ -10,7 +10,33 @@ env:
   DATABASE_URL: mysql+pymysql://root:testpw@localhost:3306/shopping_cart_test_db
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install linting tools
+        run: pip install ruff bandit mypy
+
+      - name: Ruff — lint
+        run: ruff check app/ tests/
+
+      - name: Ruff — format check
+        run: ruff format --check app/ tests/
+
+      - name: Bandit — security scan
+        run: bandit -r app/ -c pyproject.toml
+
+      - name: mypy — type check
+        run: mypy app/
+
   ci:
+    needs: lint
     runs-on: ubuntu-latest
 
     services:

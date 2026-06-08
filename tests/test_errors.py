@@ -6,7 +6,6 @@ All negative.
 """
 from fastapi.testclient import TestClient
 
-
 # ------------------------------------------------------------------ #
 # 422 Validation errors
 # ------------------------------------------------------------------ #
@@ -74,9 +73,9 @@ def test_get_deleted_product_returns_404(client: TestClient):
 
 def test_update_user_to_existing_email_returns_409(client: TestClient):
     """Two users, PATCH second to use first's email -> 409."""
-    a = client.post("/api/v1/users/", json={
+    client.post("/api/v1/users/", json={
         "email": "alpha@example.com", "password": "secret", "name": "A"
-    }).json()
+    })
     b = client.post("/api/v1/users/", json={
         "email": "beta@example.com", "password": "secret", "name": "B"
     }).json()
@@ -86,9 +85,9 @@ def test_update_user_to_existing_email_returns_409(client: TestClient):
 
 def test_update_variant_to_existing_sku_returns_409(client: TestClient):
     pid = client.post("/api/v1/products/", json={"name": "SkuTest"}).json()["id"]
-    v1 = client.post(f"/api/v1/products/{pid}/variants", json={
+    client.post(f"/api/v1/products/{pid}/variants", json={
         "sku": "S-A", "price": 1.0, "inventory_qty": 1
-    }).json()
+    })
     v2 = client.post(f"/api/v1/products/{pid}/variants", json={
         "sku": "S-B", "price": 1.0, "inventory_qty": 1
     }).json()

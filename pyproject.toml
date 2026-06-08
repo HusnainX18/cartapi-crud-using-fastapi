@@ -1,0 +1,4 @@
+[tool.bandit]
+targets = ["app"]
+skips = ["B101"]   # B101 = assert_used, ok in tests
+severity = "medium"
