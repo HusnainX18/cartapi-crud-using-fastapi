@@ -12,7 +12,7 @@
 #   - The ubuntu user can run docker (logged out and back in after bootstrap)
 #
 # What it does:
-#   1. Pull the latest image from DockerHub (husnainx18/cartapi:latest)
+#   1. Pull the latest image from DockerHub (husnaib/cartapi:latest)
 #   2. Start (or restart) the stack via docker-compose.prod.yml
 #   3. Run alembic upgrade head (migrations — idempotent)
 #   4. Healthcheck the API, failing loudly if it doesn't respond
@@ -30,8 +30,8 @@ if [ ! -f .env ]; then
 fi
 
 # ---- Step 1: Pull the latest image ----
-echo "==> Pulling husnainx18/cartapi:latest"
-docker pull husnainx18/cartapi:latest
+echo "==> Pulling husnaib/cartapi:latest"
+docker pull husnaib/cartapi:latest
 
 # ---- Step 2: Start (or restart) the stack ----
 echo "==> Starting services (docker compose -f docker-compose.prod.yml up -d)"

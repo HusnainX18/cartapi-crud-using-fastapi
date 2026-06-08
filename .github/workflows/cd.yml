@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: husnainx18/cartapi
+  IMAGE_NAME: husnaib/cartapi
 
 jobs:
   build-and-push:

@@ -54,7 +54,7 @@ services:
   # CartAPI (FastAPI + Alembic + uvicorn)
   # ---------------------------------------------------------------------------
   api:
-    image: husnainx18/cartapi:${CARTAPI_TAG:-latest}
+    image: husnaib/cartapi:${CARTAPI_TAG:-latest}
     container_name: cartapi-api
     restart: unless-stopped
     environment:
