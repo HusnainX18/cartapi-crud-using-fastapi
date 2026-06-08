@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str | None = None
     MYSQL_URL: str | None = None
     APP_NAME: str = "CartAPI"
-    APP_VERSION: str = "1.0.0"
+    APP_VERSION: str = "1.0.1"
     DEBUG: bool = False
     LOG_LEVEL: str = "INFO"
     LOG_TO_FILE: bool = False
