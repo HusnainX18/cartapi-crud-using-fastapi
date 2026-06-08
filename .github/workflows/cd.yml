@@ -48,12 +48,17 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -eu
+            echo "==> Pulling latest code"
+            cd /home/ubuntu/cartapi
+            git pull origin main
+
             echo "==> Pulling latest image"
             docker pull ${{ env.IMAGE_NAME }}:latest
 
             echo "==> Starting services"
             cd /home/ubuntu/cartapi
-            docker compose -f docker-compose.prod.yml up -d
+            git pull origin main
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans --force-recreate
 
             echo "==> Applying migrations"
             docker compose exec -T api alembic upgrade head
