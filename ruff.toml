@@ -18,4 +18,5 @@ ignore = [
 
 [lint.per-file-ignores]
 "tests/*" = ["S", "B"]   # relax security rules in test files
+"scripts/*" = ["S", "B"] # relax security rules in script files
 "app/models/*" = ["F821"] # allow forward references in type annotations
