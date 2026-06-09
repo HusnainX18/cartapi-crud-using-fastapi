@@ -12,10 +12,20 @@ from app.models.user import User
 
 fake = Faker()
 
-USERS_COUNT = 10_000
-PRODUCTS_COUNT = 50_000
-VARIANTS_COUNT = 100_000
-BATCH_SIZE = 5_000
+USERS_COUNT = 100_000
+PRODUCTS_COUNT = 300_000
+VARIANTS_COUNT = 600_000
+BATCH_SIZE = 10_000
+
+# Pre-generate static fake data pools to avoid Faker overhead inside the loops
+print("Pre-generating data pools for high-performance seeding...")
+pre_start = time.perf_counter()
+FAKE_NAMES = [fake.name() for _ in range(5000)]
+FAKE_SHA256 = [fake.sha256() for _ in range(500)]
+FAKE_PHRASES = [fake.catch_phrase() for _ in range(10000)]
+FAKE_TEXTS = [fake.text(max_nb_chars=200) for _ in range(5000)]
+FAKE_COMPANIES = [fake.company() for _ in range(5000)]
+print(f"Data pools ready in {time.perf_counter() - pre_start:.2f}s")
 
 def seed_users(db, n: int):
     print(f"Seeding {n:,} users...")
@@ -23,9 +33,9 @@ def seed_users(db, n: int):
     batch = []
     for i in range(n):
         batch.append({
-            "name": fake.name(),
+            "name": random.choice(FAKE_NAMES),
             "email": f"user{i}@example.com",
-            "password_hash": fake.sha256(),
+            "password_hash": random.choice(FAKE_SHA256),
         })
         if len(batch) == BATCH_SIZE:
             db.execute(User.__table__.insert(), batch)
@@ -42,9 +52,9 @@ def seed_products(db, n: int):
     batch = []
     for i in range(n):
         batch.append({
-            "name": fake.catch_phrase(),
-            "description": fake.text(max_nb_chars=200),
-            "brand": fake.company(),
+            "name": random.choice(FAKE_PHRASES),
+            "description": random.choice(FAKE_TEXTS),
+            "brand": random.choice(FAKE_COMPANIES),
         })
         if len(batch) == BATCH_SIZE:
             db.execute(Product.__table__.insert(), batch)
@@ -59,13 +69,8 @@ def seed_variants(db, product_ids: list, n: int):
     print(f"Seeding {n:,} variants...")
     start = time.perf_counter()
 
-    # Pre-generate unique uppercase SKUs
-    skus = set()
-    while len(skus) < n:
-        letters = "".join(random.choices(string.ascii_uppercase, k=4))
-        digits = "".join(random.choices(string.digits, k=4))
-        skus.add(f"SKU-{letters}-{digits}")
-    sku_list = list(skus)
+    # Pre-generate unique SKUs instantly with a sequence format
+    sku_list = [f"SKU-{i:06d}-{random.randint(1000, 9999)}" for i in range(n)]
 
     batch = []
     for i in range(n):

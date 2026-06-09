@@ -51,7 +51,8 @@ services:
     container_name: cartapi-api-blue
     restart: unless-stopped
     environment:
-      DATABASE_URL: mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE:-shopping_cart_db}
+      # If using AWS RDS, set DATABASE_URL in your host .env and optionally comment out the 'depends_on' block below.
+      DATABASE_URL: ${DATABASE_URL:-mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE:-shopping_cart_db}}
       APP_NAME: CartAPI
       APP_VERSION: 1.0.1
       DEBUG: "False"
@@ -90,7 +91,8 @@ services:
     container_name: cartapi-api-green
     restart: unless-stopped
     environment:
-      DATABASE_URL: mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE:-shopping_cart_db}
+      # If using AWS RDS, set DATABASE_URL in your host .env and optionally comment out the 'depends_on' block below.
+      DATABASE_URL: ${DATABASE_URL:-mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE:-shopping_cart_db}}
       APP_NAME: CartAPI
       APP_VERSION: 1.0.1
       DEBUG: "False"
